@@ -1,0 +1,3 @@
+[submodule "video-countdown"]
+	path = video-countdown
+	url = https://github.com/shanko07/video-countdown.git
