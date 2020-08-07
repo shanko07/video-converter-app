@@ -1,10 +1,15 @@
 from flask import Flask, request, render_template, send_from_directory
-app = Flask(__name__)
 import os, time
 from pathlib import Path
 import concurrent.futures
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from flask_socketio import SocketIO
+import signal
+
+app = Flask(__name__)
+#app.config['SECRET_KEY'] = 'secret!'
+#socketio = SocketIO(app)
 
 executor = concurrent.futures.ProcessPoolExecutor(max_workers=2)
 
@@ -28,7 +33,7 @@ def convert_video(directory, file, email):
     os.system(f'cd {directory}; cp ../video-countdown/* .; cp {file} announcements.mp4; bash main.sh; mv fade_vid.mp4 {directory}-converted.mp4')
     print('done!')
     ## TODO: send an email with the right link to access the converted file
-    link_url = os.path.join(request.url_root, 'converted', directory, f'{directory}-converted.mp4')
+    link_url = os.path.join(os.environ.get('APP_ROOT_URL', 'http://www.stephenshanko.com/converter'), 'converted', directory, f'{directory}-converted.mp4')
     print('link url', link_url)
     send_email(email, link_url)
     return True
@@ -83,3 +88,50 @@ def download_file(directory, filename):
     print(request.url_root)
     print(directory, filename)
     return send_from_directory(directory, filename, as_attachment=True)
+
+# WS server example
+
+import asyncio
+import websockets
+import threading
+from multiprocessing import Process
+import socket
+
+
+async def hello(websocket, path):
+    name = await websocket.recv()
+    print(f"< {name}")
+
+    greeting = f"Hello {name}!"
+
+    await websocket.send(greeting)
+    print(f"> {greeting}")
+
+def websocket_main():
+    #async def echo_server(stop):
+    #    async with websockets.serve(hello, "0.0.0.0", 8765):
+    #        await stop
+
+    #loop = asyncio.get_event_loop()
+
+    # The stop condition is set when receiving SIGTERM.
+    #stop = loop.create_future()
+    #loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)
+
+    # Run the server until the stop condition is met.
+    #loop.run_until_complete(echo_server(stop))
+    
+    print('starting the websockets server')
+    start_server = websockets.serve(hello,host='0.0.0.0',port=8765)
+
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
+
+if __name__ == "__main__":
+    print('main')
+    p = Process(target=websocket_main)
+    p.start()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True,host='0.0.0.0',port=port,use_reloader=False)
+    #threading.Thread(target=app.run, kwargs={debug:True, host:'0.0.0.0', port:port}).start()
+    #socketio.run(app,debug=True,host='0.0.0.0',port=port)
