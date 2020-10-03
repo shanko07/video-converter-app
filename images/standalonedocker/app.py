@@ -84,3 +84,10 @@ def download_file(directory, filename):
     print(request.url_root)
     print(directory, filename)
     return send_from_directory(directory, filename, as_attachment=True)
+
+if __name__ == "__main__":
+    print('main')
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True,host='0.0.0.0',port=port,use_reloader=False)
+    #threading.Thread(target=app.run, kwargs={debug:True, host:'0.0.0.0', port:port}).start()
+    #socketio.run(app,debug=True,host='0.0.0.0',port=port)

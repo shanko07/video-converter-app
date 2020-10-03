@@ -1,3 +1,6 @@
 [submodule "images/gcpdocker/video-countdown"]
 	path = images/gcpdocker/video-countdown
 	url = https://github.com/shanko07/video-countdown.git
+[submodule "images/standalonedocker/video-countdown"]
+	path = images/standalonedocker/video-countdown
+	url = https://github.com/shanko07/video-countdown.git
