@@ -44,7 +44,7 @@ def send_email(receiver_email, link):
     smtp_server = "smtp.gmail.com"
     port = 587  # For starttls
     sender_email = "scubashanko@gmail.com"
-    password = 'gbgapokntztqajrc'
+    password = os.environ.get('GOOGLE_APP_PASSWORD')
 
     # Create a secure SSL context
     context = ssl.create_default_context()
