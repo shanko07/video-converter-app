@@ -1,9 +1,56 @@
 <!doctype html>
 <title>Countdown Creator</title>
-<form method=post enctype=multipart/form-data>
-  <label for="email">Enter your email:</label>
-  <input type="email" id="email" name="email" required>
-  <label for="video">Select a file:</label>
-  <input type="file" id="video" name="video" required>
-  <input type="submit" value="Upload">
-</form>
+<head>
+  <script type="text/javascript">
+    String.prototype.toHHMMSS = function () {
+      var sec_num = parseInt(this, 10); // don't forget the second param
+      var hours   = Math.floor(sec_num / 3600);
+      var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+      var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+      if (hours   < 10) {hours   = "0"+hours;}
+      if (minutes < 10) {minutes = "0"+minutes;}
+      if (seconds < 10) {seconds = "0"+seconds;}
+      return {'string': hours+':'+minutes+':'+seconds,
+              'hours': parseInt(hours, 10),
+              'minutes': parseInt(minutes, 10),
+              'seconds': parseInt(seconds, 10)};
+    }
+
+    function sliderToLabels()
+    {
+      var val =document.getElementById("durationslider").value;
+      var results = val.toHHMMSS();
+
+      document.getElementById("h").value = results['hours'];
+      document.getElementById("m").value = results['minutes'];
+      document.getElementById("s").value = results['seconds'];
+    }
+
+    function labelToSlider()
+    {
+      h = parseInt(document.getElementById("h").value, 10);
+      m = parseInt(document.getElementById("m").value, 10);
+      s = parseInt(document.getElementById("s").value, 10);
+
+      document.getElementById("durationslider").value = (h*3600 + m*60 + s);
+    }
+  </script>
+</head>
+<body>
+  <form method=post enctype=multipart/form-data>
+    <label for="email">Enter your email:</label>
+    <input type="email" id="email" name="email" required>
+    <label for="video">Select a file:</label>
+    <input type="file" id="video" name="video" required>
+    <label for="durationslider">Video length seconds:</label>
+    <input type="range" id="durationslider" name="durationslider" min="30" max="7200" value="1800" step="1" onchange="sliderToLabels()">
+    <input id='h' name='h' type='number' min='0' max='2' value="0" onchange="labelToSlider()">
+    <label for='h'>h</label>
+    <input id='m' name='m' type='number' min='0' max='59' value="30" onchange="labelToSlider()">
+    <label for='m'>m</label>
+    <input id='s' name='s' type='number' min='0' max='59' value="0" onchange="labelToSlider()">
+    <label for='s'>s</label>
+    <input type="submit" value="Upload">
+  </form>
+</body>

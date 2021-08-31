@@ -22,12 +22,12 @@ def submit_job():
         request.files['video'].save(os.path.join(key, request.files['video'].filename))
         print('files', request.files)
         print(request.url_root)
-        executor.submit(convert_video, key, request.files['video'].filename, request.form['email'])
+        executor.submit(convert_video, key, request.files['video'].filename, request.form['email'], request.form['durationslider'])
         return render_template('success.html', file=request.files['video'].filename, email=request.form.get('email', 'None'))
 
-def convert_video(directory, file, email):
-    print(directory, file, request.url_root)
-    os.system(f'cd \'{directory}\'; cp ../video-countdown/* .; cp \'{file}\' announcements.mp4; bash main.sh; mv fade_vid.mp4 \'{directory}-converted.mp4\'')
+def convert_video(directory, file, email, duration):
+    print(directory, file, request.url_root, duration)
+    os.system(f'cd \'{directory}\'; cp ../video-countdown/* .; cp \'{file}\' announcements.mp4; bash main.sh {duration}; mv fade_vid.mp4 \'{directory}-converted.mp4\'')
     print('done!')
     print('directory', directory)
     link_url = os.path.join(os.environ.get('APP_ROOT_URL', 'http://www.stephenshanko.com/converter'), 'converted', quote(directory), quote(f'{directory}-converted.mp4'))
