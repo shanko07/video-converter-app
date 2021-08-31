@@ -4,6 +4,7 @@ from pathlib import Path
 import concurrent.futures
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from urllib.parse import quote
 
 app = Flask(__name__)
 
@@ -26,10 +27,11 @@ def submit_job():
 
 def convert_video(directory, file, email):
     print(directory, file, request.url_root)
-    os.system(f'cd {directory}; cp ../video-countdown/* .; cp {file} announcements.mp4; bash main.sh; mv fade_vid.mp4 {directory}-converted.mp4')
+    os.system(f'cd \'{directory}\'; cp ../video-countdown/* .; cp \'{file}\' announcements.mp4; bash main.sh; mv fade_vid.mp4 \'{directory}-converted.mp4\'')
     print('done!')
     ## TODO: send an email with the right link to access the converted file
-    link_url = os.path.join(os.environ.get('APP_ROOT_URL', 'http://www.stephenshanko.com/converter'), 'converted', directory, f'{directory}-converted.mp4')
+    print('directory', directory)
+    link_url = os.path.join(os.environ.get('APP_ROOT_URL', 'http://www.stephenshanko.com/converter'), 'converted', quote(directory), quote(f'{directory}-converted.mp4'))
     print('link url', link_url)
     send_email(email, link_url)
     return True
