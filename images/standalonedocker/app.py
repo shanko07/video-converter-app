@@ -29,19 +29,17 @@ def convert_video(directory, file, email):
     print(directory, file, request.url_root)
     os.system(f'cd \'{directory}\'; cp ../video-countdown/* .; cp \'{file}\' announcements.mp4; bash main.sh; mv fade_vid.mp4 \'{directory}-converted.mp4\'')
     print('done!')
-    ## TODO: send an email with the right link to access the converted file
     print('directory', directory)
     link_url = os.path.join(os.environ.get('APP_ROOT_URL', 'http://www.stephenshanko.com/converter'), 'converted', quote(directory), quote(f'{directory}-converted.mp4'))
     print('link url', link_url)
     send_email(email, link_url)
-    return True
 
 def send_email(receiver_email, link):
     import smtplib, ssl
 
     smtp_server = "smtp.gmail.com"
     port = 587  # For starttls
-    sender_email = "scubashanko@gmail.com"
+    sender_email = os.environ.get('GOOGLE_APP_EMAIL')
     password = os.environ.get('GOOGLE_APP_PASSWORD')
 
     # Create a secure SSL context
@@ -81,8 +79,6 @@ def send_email(receiver_email, link):
 
 @app.route('/converted/<path:directory>/<path:filename>')
 def download_file(directory, filename):
-    #return send_from_directory(directory, filename)
-    #return "hello"
     print(request.url_root)
     print(directory, filename)
     return send_from_directory(directory, filename, as_attachment=True)
@@ -91,5 +87,3 @@ if __name__ == "__main__":
     print('main')
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True,host='0.0.0.0',port=port,use_reloader=False)
-    #threading.Thread(target=app.run, kwargs={debug:True, host:'0.0.0.0', port:port}).start()
-    #socketio.run(app,debug=True,host='0.0.0.0',port=port)
