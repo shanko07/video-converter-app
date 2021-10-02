@@ -41,6 +41,6 @@ jobs:
           
       - name: testing
         run: |
-          echo ${{ GITHUB_WORKSPACE }}
-          ls ${{ GITHUB_WORKSPACE }}
+          echo ${{ env.GITHUB_WORKSPACE }}
+          ls ${{ env.GITHUB_WORKSPACE }}
           
