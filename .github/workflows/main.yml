@@ -35,7 +35,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          file: ${{ env.GITHUB_WORKSPACE }}/images/standalonedocker/Dockerfile
+          context: ./images/standalonedocker
+          file: ./images/standalonedocker/Dockerfile
           push: true
           tags: shanko07/vc-app:standalonedocker
           
