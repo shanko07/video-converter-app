@@ -39,3 +39,8 @@ jobs:
           push: true
           tags: shanko07/vc-app:standalonedocker
           
+      - name: testing
+        run: |
+          echo ${{ GITHUB_WORKSPACE }}
+          ls ${{ GITHUB_WORKSPACE }}
+          
