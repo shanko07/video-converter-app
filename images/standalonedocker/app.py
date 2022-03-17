@@ -5,6 +5,7 @@ import concurrent.futures
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from urllib.parse import quote
+import glob
 
 app = Flask(__name__)
 
@@ -14,7 +15,9 @@ executor = concurrent.futures.ProcessPoolExecutor(max_workers=2)
 def submit_job():
     print("I'm here")
     if request.method == 'GET':
-        return render_template('home.html')
+        audio_files = glob.glob(r"./video-countdown/*.mp3")
+        audio_files = [os.path.basename(item) for item in audio_files if os.path.basename(item) != 'looped_audio.mp3']
+        return render_template('home.html', audio_options=audio_files)
     elif request.method == 'POST':
         print('form', request.form)
         key = Path(request.files['video'].filename).stem + '-' + str(time.time())
@@ -22,12 +25,14 @@ def submit_job():
         request.files['video'].save(os.path.join(key, request.files['video'].filename))
         print('files', request.files)
         print(request.url_root)
-        executor.submit(convert_video, key, request.files['video'].filename, request.form['email'], request.form['durationslider'])
+        executor.submit(convert_video, key, request.files['video'].filename, request.form['email'], request.form['durationslider'], request.form['audio'])
         return render_template('success.html', file=request.files['video'].filename, email=request.form.get('email', 'None'))
 
-def convert_video(directory, file, email, duration):
+def convert_video(directory, file, email, duration, audio):
     print(directory, file, request.url_root, duration)
-    os.system(f'cd \'{directory}\'; cp ../video-countdown/* .; cp \'{file}\' announcements.mp4; bash main.sh {duration}; mv fade_vid.mp4 \'{directory}-converted.mp4\'')
+    command = f'cd \'{directory}\'; cp ../video-countdown/* .; cp \'{file}\' announcements.mp4; bash main.sh {duration} {audio}; mv fade_vid.mp4 \'{directory}-converted.mp4\''
+    print(command)
+    os.system(command)
     print('done!')
     print('directory', directory)
     link_url = os.path.join(os.environ.get('APP_ROOT_URL', 'http://www.stephenshanko.com/converter'), 'converted', quote(directory), quote(f'{directory}-converted.mp4'))

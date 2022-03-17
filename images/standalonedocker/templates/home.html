@@ -71,6 +71,15 @@
       <label for='s'>Seconds:</label>
       <input id='s' name='s' type='number' min='0' max='59' value="0" onchange="labelToSlider()" oninput="labelToSlider()">
     </div>
+    <div>
+      <label for="audio">Audio Track:</label>
+      <select name="audio" id="audio">
+        {%for item in audio_options%}
+  
+          <option value="{{item}}">{{item}}</option>
+        {%endfor%}
+      </select>
+    </div>
     <div id="submit-block">
       <input type="submit" id="submit" value="Upload">
     </div>
